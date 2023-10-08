@@ -21,10 +21,14 @@ app.get('/', (req, res) => {
     res.render('home')
 })
 
-app.get('/makeresort', async (req, res) => {
-    const resort = new Resort({title: 'Quintal', description: 'beautiful mountain'});
-    await resort.save();
-    res.send(resort);
+app.get('/resorts', async (req, res) => {
+    const resorts = await Resort.find({});
+    res.render('resorts/index', {resorts})
+})
+
+app.get('/resorts/:id', async (req, res) => {
+    const resort = await Resort.findById(req.params.id)
+    res.render('resorts/show', { resort })
 })
 
 app.listen(3000, () => {
