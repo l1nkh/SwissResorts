@@ -1,12 +1,26 @@
-<% layout('layouts/boilerplate') %>
-<h1><%= resort.title %></h1>
-<h2><%= resort.location %></h2>
-<p><a href="/resorts/<%= resort._id %>/edit">Edit</a></p>
-<p>
-    <form action="/resorts/<%=resort._id%>?_method=DELETE" method="POST">
-        <button>Delete</button>
-    </form>    
-</p>
-<footer>
-    <a href="/resorts"> Show All Resorts</a>
-</footer>
+<% layout('layouts/boilerplate')%>
+
+<div class="row">
+    <div class="col-6 offset-3">
+        <div class="card mb-3">
+            <img src="<%= resort.image%>" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title"><%= resort.title%></h5>
+                <p class="card-text"><%= resort.description%></p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted"><%= resort.location%></li>
+                <li class="list-group-item"><%= resort.price%>€/night</li>
+            </ul>
+            <div class="card-body">
+                <a class="card-link btn btn-info" href="/resorts/<%=resort._id%>/edit">Edit</a>
+                <form class="d-inline" action="/resorts/<%=resort._id%>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+            <div class="card-footer text-black-50">
+                2 days ago
+            </div>
+        </div>
+    </div>
+</div>

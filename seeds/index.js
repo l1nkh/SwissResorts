@@ -17,9 +17,15 @@ const seedDB = async () => {
     await Resort.deleteMany({});
     for(let i = 0; i < 50; i++){
         const random138 = Math.floor(Math.random() * 138);
+        const price = Math.floor(Math.random() * 20) + 10;
         const resort = new Resort({
             location: `${cities[random138].city}, ${cities[random138].admin_name}`,
-            title: `${sample(descriptors)} ${sample(places)}`
+            title: `${sample(descriptors)} ${sample(places)}`,
+            image: 'https://source.unsplash.com/collection/483251/',
+            description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.' + 
+                'Expedita aspernatur culpa voluptas eos fuga quaerat libero labore consectetur,'+ 
+                ' quam tempora corporis est. Saepe amet impedit ad cum distinctio blanditiis repudiandae.',
+            price: price
         });
         await resort.save();
     }
