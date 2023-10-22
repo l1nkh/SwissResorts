@@ -2,12 +2,13 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const { resortSchema, reviewSchema } = require('./schemas.js');
-const catchAsync = require('./utils/catchAsync');
+const session = require('express-session');
+const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
-const Resort = require('./models/resort');
-const Review = require('./models/review');
+
+const resorts = require('./routes/resorts');
+const reviews = require('./routes/reviews');
 
 mongoose.connect('mongodb://localhost:27017/swiss-resorts');
 
@@ -19,92 +20,40 @@ db.once("open", () => {
     console.log("Database connected");
 });
 
-
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
+app.use(express.static(path.join(__dirname, 'public')))
 
-const validateResort = (req, res, next) => {
-    const { error } = resortSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
+const sessionConfig = {
+    secret: 'thisshouldbeabettersecret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
+app.use(session(sessionConfig));
+app.use(flash());
 
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+app.use('/resorts', resorts);
+app.use('/resorts/:id/reviews', reviews)
 
 app.get('/', (req, res) => {
     res.render('home')
 });
-app.get('/resorts', catchAsync(async (req, res) => {
-    const resorts = await Resort.find({});
-    res.render('resorts/index', { resorts })
-}));
 
-app.get('/resorts/new', (req, res) => {
-    res.render('resorts/new');
-})
-
-
-app.post('/resorts', validateResort, catchAsync(async (req, res, next) => {
-    // if (!req.body.resort) throw new ExpressError('Invalid resort Data', 400);
-    const resort = new Resort(req.body.resort);
-    await resort.save();
-    res.redirect(`/resorts/${resort._id}`)
-}))
-
-app.get('/resorts/:id', catchAsync(async (req, res,) => {
-    const resort = await Resort.findById(req.params.id).populate('reviews');
-    res.render('resorts/show', { resort });
-}));
-
-app.get('/resorts/:id/edit', catchAsync(async (req, res) => {
-    const resort = await Resort.findById(req.params.id)
-    res.render('resorts/edit', { resort });
-}))
-
-app.put('/resorts/:id', validateResort, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const resort = await Resort.findByIdAndUpdate(id, { ...req.body.resort });
-    res.redirect(`/resorts/${resort._id}`)
-}));
-
-app.delete('/resorts/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Resort.findByIdAndDelete(id);
-    res.redirect('/resorts');
-}));
-
-
-app.post('/resorts/:id/reviews', validateReview, catchAsync(async (req, res) => {
-    const resort = await Resort.findById(req.params.id);
-    const review = new Review(req.body.review);
-    resort.reviews.push(review);
-    await review.save();
-    await resort.save();
-    res.redirect(`/resorts/${resort._id}`);
-}))
-
-app.delete('/resorts/:id/reviews/:reviewId', catchAsync(async (req, res) => {
-    const { id, reviewId } = req.params;
-    await Resort.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-    await Review.findByIdAndDelete(reviewId);
-    res.redirect(`/resorts/${id}`);
-}))
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
