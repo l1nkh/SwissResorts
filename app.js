@@ -6,9 +6,13 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
-const resorts = require('./routes/resorts');
-const reviews = require('./routes/reviews');
+const userRoutes = require('./routes/users');
+const resortsRoutes = require('./routes/resorts');
+const reviewRoutes = require('./routes/reviews');
 
 mongoose.connect('mongodb://localhost:27017/swiss-resorts');
 
@@ -40,6 +44,12 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate))
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
@@ -47,8 +57,9 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/resorts', resorts);
-app.use('/resorts/:id/reviews', reviews)
+app.use('/', userRoutes);
+app.use('/resorts', resortsRoutes);
+app.use('/resorts/:id/reviews', reviewRoutes)
 
 app.get('/', (req, res) => {
     res.render('home')
