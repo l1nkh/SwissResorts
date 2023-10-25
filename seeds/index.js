@@ -19,6 +19,7 @@ const seedDB = async () => {
         const random138 = Math.floor(Math.random() * 138);
         const price = Math.floor(Math.random() * 20) + 10;
         const resort = new Resort({
+            author: '65396477882f62f1af0ef50e',
             location: `${cities[random138].city}, ${cities[random138].admin_name}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             image: 'https://source.unsplash.com/collection/483251/',
