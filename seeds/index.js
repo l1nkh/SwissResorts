@@ -26,17 +26,21 @@ const seedDB = async () => {
                 'Expedita aspernatur culpa voluptas eos fuga quaerat libero labore consectetur,' +
                 ' quam tempora corporis est. Saepe amet impedit ad cum distinctio blanditiis repudiandae.',
             price,
+            geometry: {
+                type: 'Point',
+                coordinates: [6.146601, 46.201756]
+            }, 
             images: [
-                {
-                  url: 'https://res.cloudinary.com/dpy1uef7w/image/upload/v1698363771/SwissResorts/zwpjdyrlcpglgbkyh1fo.jpg',
-                  filename: 'SwissResorts/zwpjdyrlcpglgbkyh1fo'
-                },
-                {
-                  url: 'https://res.cloudinary.com/dpy1uef7w/image/upload/v1698363772/SwissResorts/qol7wj5f7lqlbq5g3x8r.jpg',
-                  filename: 'SwissResorts/qol7wj5f7lqlbq5g3x8r'
-                }
-            ]
-        })
+                    {
+                        url: 'https://res.cloudinary.com/dpy1uef7w/image/upload/v1698363771/SwissResorts/zwpjdyrlcpglgbkyh1fo.jpg',
+                        filename: 'SwissResorts/zwpjdyrlcpglgbkyh1fo'
+                    },
+                    {
+                        url: 'https://res.cloudinary.com/dpy1uef7w/image/upload/v1698363772/SwissResorts/qol7wj5f7lqlbq5g3x8r.jpg',
+                        filename: 'SwissResorts/qol7wj5f7lqlbq5g3x8r'
+                    }
+                ]
+            })
         await resort.save();
     }
 }
