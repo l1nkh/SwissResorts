@@ -11,6 +11,8 @@ ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200');
 });
 
+const opts = { toJSON: { virtuals: true } };
+
 const ResortSchema = new Schema({
     title: String,
     images: [ImageSchema],
@@ -38,6 +40,12 @@ const ResortSchema = new Schema({
             ref: 'Review'
         }
     ]
+}, opts);
+
+ResortSchema.virtual('properties.popUpMarkup').get(function () {
+    return `
+    <strong><a href="/resorts/${this._id}">${this.title}</a><strong>
+    <p>${this.description.substring(0, 20)}...</p>`
 });
 
 ResortSchema.post('findOneAndDelete', async function (doc) {

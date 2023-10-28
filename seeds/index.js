@@ -15,7 +15,7 @@ const sample = array => array[Math.floor(Math.random() * array.length)];
 
 const seedDB = async () => {
     await Resort.deleteMany({});
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 90; i++) {
         const random138 = Math.floor(Math.random() * 138);
         const price = Math.floor(Math.random() * 20) + 10;
         const resort = new Resort({
@@ -28,7 +28,10 @@ const seedDB = async () => {
             price,
             geometry: {
                 type: 'Point',
-                coordinates: [6.146601, 46.201756]
+                coordinates: [
+                    cities[random138].lng,
+                    cities[random138].lat,
+                ]
             }, 
             images: [
                     {

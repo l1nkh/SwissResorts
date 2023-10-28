@@ -12,6 +12,8 @@ const map = new mapboxgl.Map({
     zoom: 8
 });
 
+map.addControl(new mapboxgl.NavigationControl());
+
 const marker1 = new mapboxgl.Marker()
     .setLngLat(resort.geometry.coordinates)
     .setPopup(
