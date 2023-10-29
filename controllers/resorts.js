@@ -72,7 +72,7 @@ module.exports.updateResort = async (req, res) => {
 
 module.exports.deleteResort = async (req, res) => {
     const { id } = req.params;
-    await resort.findByIdAndDelete(id);
+    await Resort.findByIdAndDelete(id);
     req.flash('success', 'Successfully deleted resort')
     res.redirect('/resorts');
 }
